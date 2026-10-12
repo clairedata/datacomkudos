@@ -52,7 +52,10 @@ function initEventListeners() {
 
     // Refresh Feed Button
     const refreshBtn = document.getElementById('refreshFeedBtn');
-    refreshBtn.addEventListener('click', () => fetchLiveFeed());
+    refreshBtn.addEventListener('click', () => {
+        fetchLiveFeed();
+        fetchUserStatistics();
+    });
 
     // Admin Filter Tabs
     const adminFilterTabs = document.getElementById('adminFilterTabs');
@@ -234,8 +237,13 @@ function handleScopeTabClick(e) {
 async function fetchUserStatistics() {
     if (!state.currentUser) return;
     try {
-        const response = await fetch(`/api/v1/users/${state.currentUser.id}/statistics`, {
-            headers: { 'X-User-Id': state.currentUser.id }
+        const response = await fetch(`/api/v1/users/${state.currentUser.id}/statistics?_t=${Date.now()}`, {
+            cache: 'no-store',
+            headers: { 
+                'X-User-Id': state.currentUser.id,
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache'
+            }
         });
         if (response.ok) {
             const stats = await response.json();
@@ -439,6 +447,9 @@ function startCooldownTimer(seconds) {
  */
 async function fetchLiveFeed() {
     if (!state.currentUser) return;
+
+    // Automatically synchronize user statistics alongside live feed
+    fetchUserStatistics();
 
     const feedList = document.getElementById('feedList');
     const emptyState = document.getElementById('feedEmptyState');

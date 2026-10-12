@@ -145,11 +145,11 @@ def get_user_statistics(user_id: str, conn: Optional[sqlite3.Connection] = None)
         """, (user_id,))
         kudos_received = cursor.fetchone()["total"]
 
-        # Total kudos sent
+        # Total visible kudos sent (approved and published)
         cursor.execute("""
             SELECT COUNT(*) AS total
             FROM kudos
-            WHERE sender_id = ?;
+            WHERE sender_id = ? AND is_visible = 1;
         """, (user_id,))
         kudos_sent = cursor.fetchone()["total"]
 

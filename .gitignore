@@ -1,0 +1,27 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv/
+
+# Environment variables
+.env
+
+# SQLite local database files (generated via init_db.py)
+data/*.db
+data/*.db-wal
+data/*.db-shm
+
+# Legacy Node.js
+node_modules/
+package-lock.json
+
+# perso :
+SPECIFICATION_fr.md
+TASK2_INSTRUCTIONS_fr.md
+etpe_dev.md

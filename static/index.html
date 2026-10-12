@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datacom Kudos | Employee Appreciation & Recognition</title>
+    <meta name="description" content="Datacom Employee Recognition Portal - Send kudos, celebrate peer achievements, and foster a culture of appreciation.">
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <!-- ==================================================================== -->
+    <!-- TOP NAVIGATION BAR                                                   -->
+    <!-- ==================================================================== -->
+    <header class="topbar">
+        <div class="topbar-container">
+            <div class="brand">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                <div class="brand-info">
+                    <h1>DATACOM <span>Kudos</span></h1>
+                    <p class="brand-subtitle">Peer Recognition & Culture Portal</p>
+                </div>
+            </div>
+
+            <!-- Profile & Evaluation Role Switcher (Mock Testbed REQ-GAP-01) -->
+            <div class="user-switcher-card">
+                <div class="switcher-meta">
+                    <span class="switcher-label"><i class="fa-solid fa-sliders"></i> Testbed Switcher:</span>
+                    <select id="userSelector" class="user-select-dropdown" aria-label="Switch User Profile">
+                        <!-- Populated dynamically via JS -->
+                    </select>
+                </div>
+                <div class="active-profile-badge" id="activeProfileBadge">
+                    <img id="headerAvatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" alt="User Avatar" class="header-avatar">
+                    <div class="profile-details">
+                        <span id="headerUserName" class="profile-name">Sarah Connor</span>
+                        <span id="headerUserRole" class="role-pill role-user">Employee</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================================================================== -->
+    <!-- HERO STATS STRIP                                                     -->
+    <!-- ==================================================================== -->
+    <section class="hero-strip">
+        <div class="hero-container">
+            <div class="hero-text">
+                <h2>Recognize Excellence, <span>Celebrate Success</span></h2>
+                <p>Express genuine gratitude to colleagues who embody Datacom's values every day.</p>
+            </div>
+            <div class="stats-pills">
+                <div class="stat-item">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <div>
+                        <strong>Heuristic AI</strong>
+                        <span>Real-Time Triage</span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <i class="fa-solid fa-fingerprint"></i>
+                    <div>
+                        <strong>Immutable Audit</strong>
+                        <span>Zero Deletions</span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <i class="fa-solid fa-bolt"></i>
+                    <div>
+                        <strong>Anti-Spam</strong>
+                        <span>10s Cooldown</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- MAIN INTERACTIVE LAYOUT (2 COLUMNS)                                  -->
+    <!-- ==================================================================== -->
+    <main class="main-content">
+        <div class="content-grid">
+
+            <!-- LEFT COLUMN: KUDOS SUBMISSION FORM (PHASE P4) -->
+            <section class="card form-card">
+                <div class="card-header">
+                    <div class="card-icon icon-send">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title">Send a Kudo</h3>
+                        <p class="card-desc">Highlight a colleague's great work across our company</p>
+                    </div>
+                </div>
+
+                <form id="kudoForm" class="kudo-form">
+                    <!-- 1. Recipient Selector -->
+                    <div class="form-group">
+                        <label for="recipientSelect" class="form-label">
+                            <i class="fa-solid fa-user-plus"></i> Select Colleague
+                        </label>
+                        <select id="recipientSelect" class="form-control" required>
+                            <option value="" disabled selected>Choose an active team member...</option>
+                            <!-- Populated dynamically via JS -->
+                        </select>
+                        <small class="form-hint">Only active colleagues are listed (self-kudos strictly prohibited).</small>
+                    </div>
+
+                    <!-- 2. Category Selector -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fa-solid fa-tags"></i> Core Value / Category
+                        </label>
+                        <div class="category-grid" id="categoryGroup">
+                            <label class="category-radio">
+                                <input type="radio" name="category" value="Teamwork" checked>
+                                <span class="category-chip cat-teamwork">
+                                    <i class="fa-solid fa-people-group"></i> Teamwork
+                                </span>
+                            </label>
+                            <label class="category-radio">
+                                <input type="radio" name="category" value="Innovation">
+                                <span class="category-chip cat-innovation">
+                                    <i class="fa-solid fa-lightbulb"></i> Innovation
+                                </span>
+                            </label>
+                            <label class="category-radio">
+                                <input type="radio" name="category" value="Customer Delight">
+                                <span class="category-chip cat-customer">
+                                    <i class="fa-solid fa-heart"></i> Customer Delight
+                                </span>
+                            </label>
+                            <label class="category-radio">
+                                <input type="radio" name="category" value="Leadership">
+                                <span class="category-chip cat-leadership">
+                                    <i class="fa-solid fa-compass"></i> Leadership
+                                </span>
+                            </label>
+                            <label class="category-radio">
+                                <input type="radio" name="category" value="Above & Beyond">
+                                <span class="category-chip cat-above">
+                                    <i class="fa-solid fa-rocket"></i> Above & Beyond
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 3. Quick Praise Chips -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Quick Praise Starters
+                        </label>
+                        <div class="chips-container" id="praiseChips">
+                            <button type="button" class="praise-chip" data-text="👏 Bravo for taking the lead and keeping the project on track!">
+                                👏 Bravo on the initiative!
+                            </button>
+                            <button type="button" class="praise-chip" data-text="⭐ Outstanding dedication and quality in resolving that incident!">
+                                ⭐ Outstanding dedication!
+                            </button>
+                            <button type="button" class="praise-chip" data-text="🤝 Thank you so much for stepping in and supporting the team today!">
+                                🤝 Thanks for your help!
+                            </button>
+                            <button type="button" class="praise-chip" data-text="🚀 Stellar delivery under pressure! Truly inspiring teamwork.">
+                                🚀 Stellar delivery!
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 4. Appreciation Message & Live Counter -->
+                    <div class="form-group">
+                        <div class="label-with-counter">
+                            <label for="messageInput" class="form-label">
+                                <i class="fa-solid fa-pen-nib"></i> Your Appreciation Message
+                            </label>
+                            <span id="charCounter" class="char-counter">0 / 500</span>
+                        </div>
+                        <textarea 
+                            id="messageInput" 
+                            class="form-control textarea-message" 
+                            rows="4" 
+                            maxlength="500"
+                            placeholder="What made this person's contribution special? (Between 3 and 500 characters)"
+                            required
+                        ></textarea>
+                        <div class="message-meta-footer">
+                            <small class="form-hint" id="validationHint">Minimum 3 characters required.</small>
+                            <div id="cooldownTimer" class="cooldown-badge hidden">
+                                <i class="fa-solid fa-clock"></i> Anti-spam cooldown: <span id="cooldownSeconds">10</span>s
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="submitKudoBtn" class="btn btn-primary btn-submit">
+                        <span class="btn-text"><i class="fa-solid fa-paper-plane"></i> Publish Kudo</span>
+                        <span class="btn-spinner hidden"><i class="fa-solid fa-circle-notch fa-spin"></i> Processing...</span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- RIGHT COLUMN: PUBLIC RECOGNITION FEED & ADMIN MODERATION -->
+            <section class="card feed-card">
+                <div class="feed-header">
+                    <div class="feed-title-block">
+                        <div class="card-icon icon-feed">
+                            <i class="fa-solid fa-rss"></i>
+                        </div>
+                        <div>
+                            <h3 class="card-title">Recognition Feed</h3>
+                            <p class="card-desc">Real-time accolades from across Datacom</p>
+                        </div>
+                    </div>
+
+                    <div class="feed-actions">
+                        <button id="refreshFeedBtn" class="btn-icon" title="Refresh Live Feed">
+                            <i class="fa-solid fa-arrows-rotate"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dedicated Admin Moderation Banner & Filter Navigation -->
+                <div class="admin-moderation-banner hidden" id="adminModerationBanner">
+                    <div class="admin-banner-header">
+                        <span class="admin-banner-title">
+                            <i class="fa-solid fa-shield-halved"></i> Espace Modération & Quarantaine
+                        </span>
+                        <span class="admin-banner-subtitle">Contrôle des messages indésirables avant transmission</span>
+                    </div>
+                    <div class="admin-filter-pills" id="adminFilterTabs">
+                        <button class="filter-pill active" data-filter="all">
+                            <i class="fa-solid fa-list"></i> Tous les Kudos
+                        </button>
+                        <button class="filter-pill pill-quarantine" data-filter="flagged">
+                            <i class="fa-solid fa-triangle-exclamation"></i> En Quarantaine IA
+                            <span class="count-badge" id="flaggedCountBadge">0</span>
+                        </button>
+                        <button class="filter-pill pill-hidden" data-filter="hidden">
+                            <i class="fa-solid fa-eye-slash"></i> Masqués
+                            <span class="count-badge" id="hiddenCountBadge">0</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Kudos Container -->
+                <div id="feedList" class="feed-list">
+                    <!-- Cards rendered dynamically via JS -->
+                </div>
+
+                <!-- Feed Empty State -->
+                <div id="feedEmptyState" class="empty-state hidden">
+                    <div class="empty-icon"><i class="fa-solid fa-comments"></i></div>
+                    <h4>No Kudos Found</h4>
+                    <p>Be the first to recognize a colleague's great work today!</p>
+                </div>
+
+                <!-- Feed Loading Skeleton -->
+                <div id="feedLoadingSkeleton" class="feed-skeleton hidden">
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- ==================================================================== -->
+    <!-- MODALS (ADMIN CONTENT MODERATION)                                    -->
+    <!-- ==================================================================== -->
+
+    <!-- 1. Moderate Visibility Modal (Hide / Restore) -->
+    <div id="moderateModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h4 id="moderateModalTitle"><i class="fa-solid fa-shield"></i> Moderate Kudo Visibility</h4>
+                <button class="modal-close" data-close-modal="moderateModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="moderateModalDesc">You are about to change this kudo's public visibility.</p>
+                <div class="form-group">
+                    <label for="moderateReasonInput" class="form-label">
+                        Audit Reason <span class="required-star">*</span>
+                    </label>
+                    <textarea 
+                        id="moderateReasonInput" 
+                        class="form-control" 
+                        rows="3" 
+                        placeholder="State mandatory compliance justification for audit logs..."
+                        required
+                    ></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-close-modal="moderateModal">Cancel</button>
+                <button id="confirmModerateBtn" class="btn btn-warning">Confirm Action</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Dismiss AI Flag Modal -->
+    <div id="dismissModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h4><i class="fa-solid fa-check-double"></i> Dismiss AI Flag (False Positive)</h4>
+                <button class="modal-close" data-close-modal="dismissModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Confirm that the flagged terms were reviewed and verified as benign in professional context.</p>
+                <div class="form-group">
+                    <label for="dismissReasonInput" class="form-label">
+                        Justification for Audit Trail <span class="required-star">*</span>
+                    </label>
+                    <textarea 
+                        id="dismissReasonInput" 
+                        class="form-control" 
+                        rows="3" 
+                        placeholder="e.g. Technical jargon verified in proper engineering context..."
+                        required
+                    ></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-close-modal="dismissModal">Cancel</button>
+                <button id="confirmDismissBtn" class="btn btn-primary">Dismiss Alert</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Permanent Deletion Modal -->
+    <div id="deleteModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header header-danger">
+                <h4><i class="fa-solid fa-trash-can"></i> Permanent Deletion</h4>
+                <button class="modal-close" data-close-modal="deleteModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="warning-text">
+                    <strong>Rule BR-09 Compliance Notice:</strong>  
+                    The kudo will be permanently removed from public view, but its audit history will remain indefinitely preserved in the immutable audit table.
+                </p>
+                <div class="form-group">
+                    <label for="deleteReasonInput" class="form-label">
+                        Mandatory Deletion Reason <span class="required-star">*</span>
+                    </label>
+                    <textarea 
+                        id="deleteReasonInput" 
+                        class="form-control" 
+                        rows="3" 
+                        placeholder="State reason for permanent deletion..."
+                        required
+                    ></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-close-modal="deleteModal">Cancel</button>
+                <button id="confirmDeleteBtn" class="btn btn-danger">Permanently Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Chronological Audit Trail Modal -->
+    <div id="auditModal" class="modal-overlay hidden">
+        <div class="modal-card modal-large">
+            <div class="modal-header">
+                <h4><i class="fa-solid fa-clock-rotate-left"></i> Immutable Moderation Audit Trail</h4>
+                <button class="modal-close" data-close-modal="auditModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="audit-intro">Audit log records are append-only and protected by database triggers (BR-10).</p>
+                <div id="auditLogTimeline" class="audit-timeline">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-close-modal="auditModal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================================================================== -->
+    <!-- FLOATING TOAST NOTIFICATIONS CONTAINER                               -->
+    <!-- ==================================================================== -->
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+    <!-- App JavaScript Logic -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

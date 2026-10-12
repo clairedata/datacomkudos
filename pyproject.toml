@@ -1,0 +1,26 @@
+[project]
+name = "datacomkudos"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "clairedata", email = "clairedata2026@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.143.0",
+    "uvicorn>=0.54.0",
+    "pytest>=8.0.0",
+    "httpx>=0.28.1",
+]
+
+[project.scripts]
+datacomkudos = "datacomkudos:main"
+
+[build-system]
+requires = ["uv_build>=0.12.9,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

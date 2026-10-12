@@ -19,6 +19,7 @@ from pydantic import BaseModel, Field
 from src.middleware.auth import get_current_user, require_admin
 from src.services.kudos_service import (
     get_active_users,
+    get_user_statistics,
     get_kudos_feed,
     create_kudo,
     moderate_kudo,
@@ -72,11 +73,24 @@ def list_users(
     return get_active_users()
 
 
+@router.get("/users/{user_id}/statistics")
+def get_user_statistics_endpoint(
+    user_id: str = Path(..., description="Unique ID of the user"),
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """
+    Retrieves personal kudos statistics (received and sent counts) for an employee (US-05).
+    Accessible to any authenticated user.
+    """
+    return get_user_statistics(user_id)
+
+
 @router.get("/kudos")
 def list_kudos(
     limit: int = Query(20, ge=1, le=50, description="Number of items to retrieve (max 50)"),
     offset: int = Query(0, ge=0, description="Pagination offset"),
     filter: str = Query("all", description="Admin filter: 'all', 'flagged', or 'hidden'"),
+    scope: str = Query("all", description="Personal scope: 'all', 'received', or 'sent' (US-05)"),
     current_user: Dict[str, Any] = Depends(get_current_user)
 ):
     """
@@ -84,6 +98,7 @@ def list_kudos(
     Enforces strict DTO segregation (BR-06):
     - Standard employees receive PublicKudoDTO (only visible kudos, internal moderation expunged).
     - Administrators receive AdminKudoDTO (including visibility flags, AI warnings, and audit data).
+    - Supports personal scope ('all', 'received', 'sent') per US-05.
     """
     # Enforce default filter for standard users
     filter_type = filter if current_user.get("role") == "admin" else "all"
@@ -92,7 +107,8 @@ def list_kudos(
         current_user=current_user,
         limit=limit,
         offset=offset,
-        filter_type=filter_type
+        filter_type=filter_type,
+        scope=scope
     )
 
 

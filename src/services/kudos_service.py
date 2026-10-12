@@ -119,11 +119,59 @@ def get_user_by_id(user_id: str, conn: Optional[sqlite3.Connection] = None) -> O
             conn.close()
 
 
+def get_user_statistics(user_id: str, conn: Optional[sqlite3.Connection] = None) -> Dict[str, Any]:
+    """
+    Retrieves personal kudos statistics for a given employee (User Story US-05).
+    - kudos_received: total visible kudos received by this user
+    - kudos_sent: total kudos given/sent by this user
+    """
+    close_after = False
+    if conn is None:
+        conn = get_connection()
+        close_after = True
+
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, name, department, role FROM users WHERE id = ?;", (user_id,))
+        user_row = cursor.fetchone()
+        if not user_row:
+            raise NotFoundError(f"User with ID '{user_id}' not found.")
+
+        # Total visible kudos received
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM kudos
+            WHERE recipient_id = ? AND is_visible = 1;
+        """, (user_id,))
+        kudos_received = cursor.fetchone()["total"]
+
+        # Total kudos sent
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM kudos
+            WHERE sender_id = ?;
+        """, (user_id,))
+        kudos_sent = cursor.fetchone()["total"]
+
+        return {
+            "user_id": user_id,
+            "name": user_row["name"],
+            "department": user_row["department"],
+            "role": user_row["role"],
+            "kudos_received": kudos_received,
+            "kudos_sent": kudos_sent
+        }
+    finally:
+        if close_after:
+            conn.close()
+
+
 def get_kudos_feed(
     current_user: Dict[str, Any],
     limit: int = 20,
     offset: int = 0,
     filter_type: str = "all",
+    scope: str = "all",
     conn: Optional[sqlite3.Connection] = None
 ) -> Dict[str, Any]:
     """
@@ -131,6 +179,7 @@ def get_kudos_feed(
     Enforces strict DTO segregation (BR-06):
     - Standard users receive PublicKudoDTO (only visible kudos, no moderation metadata).
     - Administrators receive AdminKudoDTO (full visibility into flags and audit info).
+    - Supports scope filter: 'all', 'received' (kudos given to current user), 'sent' (kudos given by current user).
     """
     close_after = False
     if conn is None:
@@ -154,6 +203,14 @@ def get_kudos_feed(
                 where_clauses.append("k.ai_flagged = 1")
             elif filter_type == "hidden":
                 where_clauses.append("k.is_visible = 0")
+
+        # Personal Scope filter (User Story 5)
+        if scope == "received":
+            where_clauses.append("k.recipient_id = ?")
+            params.append(current_user["id"])
+        elif scope == "sent":
+            where_clauses.append("k.sender_id = ?")
+            params.append(current_user["id"])
 
         where_sql = f"WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
 

@@ -82,6 +82,7 @@ Two strict roles are enforced by server-side middleware:
 * **US-05 [Admin Manual Moderation]:** As an administrator, I want to hide or delete an inappropriate kudo, with mandatory entry of a moderation reason to ensure full auditability.
 * **US-06 [AI Pre-Moderation & Quarantine]:** As an administrator, I want suspicious messages containing offensive or inappropriate content to be automatically placed in quarantine upon submission (hidden from the recipient and public feed) so that I can review and approve or delete them prior to delivery.
 * **US-07 [AI False Positive Dismissal]:** As an administrator, I want to dismiss an unfounded AI flag to restore normal status in the audit trail.
+* **US-08 [Personal History & Statistics]:** As an employee, I want to see my own kudos statistics (total received, total given) and filter the feed by kudos I received and kudos I gave, so that I can easily track my recognition history and achievements.
 
 ---
 
@@ -108,6 +109,7 @@ Two strict roles are enforced by server-side middleware:
   - **Pre-Moderation Quarantine:** Content analysis runs synchronously upon submission. If the heuristic engine flags a message (e.g., abusive terms, harassment, spam repetition), the kudo is persisted with `is_visible = 0` (quarantined) and an automated moderation reason. The message is completely inaccessible to standard users (including the recipient) until reviewed and approved by an administrator.
   - **Instant Publication for Clean Messages:** Messages with zero flags are published immediately (`is_visible = 1`).
   - **Fail-Open Resilience Policy:** In the event of an unhandled internal exception within the heuristic analyzer, the system applies a **Fail-Open** policy: the kudo is accepted and published (`ai_flagged = 0, is_visible = 1`), while an `ERROR` log is recorded on the server for investigation.
+* **BR-12 (Personal Scope & Statistics):** Users can query personal kudos statistics via `GET /api/v1/users/:id/statistics` and filter the recognition feed using `scope=all|received|sent`. Standard users only see visible kudos in received history, while sent history reflects accolades authored by the active user.
 
 ---
 
@@ -256,12 +258,30 @@ Standardized application error codes:
 
 ---
 
-#### 2. `GET /api/v1/kudos`
+#### 2. `GET /api/v1/users/:id/statistics`
+* **Access:** Any authenticated user.
+* **Description:** Retrieves personal kudos statistics (received and sent count) for an employee (US-08).
+* **Response `200 OK`:**
+  ```json
+  {
+    "user_id": "u-01",
+    "name": "Sarah Connor",
+    "department": "Cloud Solutions",
+    "role": "user",
+    "kudos_received": 12,
+    "kudos_sent": 8
+  }
+  ```
+
+---
+
+#### 3. `GET /api/v1/kudos`
 * **Access:** Any authenticated user.
 * **Query Parameters:**
   - `limit` (integer, 1 to 50, default: 20)
   - `offset` (integer >= 0, default: 0)
   - `filter` (admin only: `'all'` | `'flagged'` | `'hidden'`, default: `'all'`)
+  - `scope` (personal scope: `'all'` | `'received'` | `'sent'`, default: `'all'`)
 * **Strict Role-Based DTO Separation (BR-06):**
 
 ##### Example Response `200 OK` for Standard User (`PublicKudoDTO`):

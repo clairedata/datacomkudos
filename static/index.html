@@ -43,7 +43,14 @@
                     <img id="headerAvatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" alt="User Avatar" class="header-avatar">
                     <div class="profile-details">
                         <span id="headerUserName" class="profile-name">Sarah Connor</span>
-                        <span id="headerUserRole" class="role-pill role-user">Employee</span>
+                        <div class="profile-meta-line">
+                            <span id="headerUserRole" class="role-pill role-user">Employee</span>
+                            <div class="header-stats-pill" id="headerStatsPill" title="Vos statistiques personnelles de kudos">
+                                <span><i class="fa-solid fa-inbox"></i> <strong id="statReceivedCount">0</strong> Reçus</span>
+                                <span class="stat-bullet">•</span>
+                                <span><i class="fa-solid fa-paper-plane"></i> <strong id="statSentCount">0</strong> Donnés</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -226,6 +233,19 @@
                             <i class="fa-solid fa-arrows-rotate"></i>
                         </button>
                     </div>
+                </div>
+
+                <!-- User Scope Navigation (Tout le flux, Reçus par moi, Donnés par moi) US-05 -->
+                <div class="feed-scope-tabs" id="feedScopeTabs">
+                    <button type="button" class="scope-tab active" data-scope="all">
+                        <i class="fa-solid fa-globe"></i> Tout le flux
+                    </button>
+                    <button type="button" class="scope-tab" data-scope="received">
+                        <i class="fa-solid fa-inbox"></i> Reçus par moi
+                    </button>
+                    <button type="button" class="scope-tab" data-scope="sent">
+                        <i class="fa-solid fa-paper-plane"></i> Donnés par moi
+                    </button>
                 </div>
 
                 <!-- Dedicated Admin Moderation Banner & Filter Navigation -->

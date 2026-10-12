@@ -365,3 +365,45 @@ def test_flagged_kudo_is_automatically_quarantined_from_public_feed(client: Test
     admin_feed = client.get("/api/v1/kudos?filter=flagged", headers={"X-User-Id": "u-03"})
     admin_ids = [k["id"] for k in admin_feed.json()["data"]]
     assert kudo["id"] in admin_ids
+
+
+def test_get_user_statistics_api(client: TestClient):
+    """
+    US-05 / US-07: Tests GET /api/v1/users/{id}/statistics endpoint.
+    Returns user details along with kudos_received and kudos_sent counts.
+    """
+    res = client.get("/api/v1/users/u-01/statistics", headers={"X-User-Id": "u-01"})
+    assert res.status_code == 200
+    data = res.json()
+    assert data["user_id"] == "u-01"
+    assert data["name"] == "Sarah Connor"
+    assert "kudos_received" in data
+    assert "kudos_sent" in data
+    assert isinstance(data["kudos_received"], int)
+    assert isinstance(data["kudos_sent"], int)
+
+    # 404 for unknown user
+    res_404 = client.get("/api/v1/users/u-ghost/statistics", headers={"X-User-Id": "u-01"})
+    assert res_404.status_code == 404
+
+
+def test_kudos_feed_scope_api(client: TestClient):
+    """
+    US-05: Tests GET /api/v1/kudos with personal scope parameter ('all', 'received', 'sent').
+    """
+    # 1. Scope=all returns general feed
+    res_all = client.get("/api/v1/kudos?scope=all", headers={"X-User-Id": "u-01"})
+    assert res_all.status_code == 200
+
+    # 2. Scope=received returns kudos received by u-01
+    res_received = client.get("/api/v1/kudos?scope=received", headers={"X-User-Id": "u-01"})
+    assert res_received.status_code == 200
+    for kudo in res_received.json()["data"]:
+        assert kudo["recipient"]["id"] == "u-01"
+
+    # 3. Scope=sent returns kudos sent by u-01
+    res_sent = client.get("/api/v1/kudos?scope=sent", headers={"X-User-Id": "u-01"})
+    assert res_sent.status_code == 200
+    for kudo in res_sent.json()["data"]:
+        assert kudo["sender"]["id"] == "u-01"
+

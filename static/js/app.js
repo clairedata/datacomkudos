@@ -13,6 +13,7 @@ const state = {
     users: [],               // List of all active colleagues fetched from backend
     kudos: [],               // Currently displayed kudos
     currentFilter: 'all',    // Admin feed filter ('all', 'flagged', 'hidden')
+    currentScope: 'all',     // User scope filter ('all', 'received', 'sent' US-05)
     cooldownTimer: null,     // Interval ID for anti-spam timer
     cooldownRemaining: 0,    // Remaining cooldown seconds
     activeModalKudoId: null, // Target kudo ID for active modal action
@@ -56,6 +57,12 @@ function initEventListeners() {
     // Admin Filter Tabs
     const adminFilterTabs = document.getElementById('adminFilterTabs');
     adminFilterTabs.addEventListener('click', handleFilterTabClick);
+
+    // Feed Scope Tabs (US-05)
+    const feedScopeTabs = document.getElementById('feedScopeTabs');
+    if (feedScopeTabs) {
+        feedScopeTabs.addEventListener('click', handleScopeTabClick);
+    }
 
     // Modal Close Buttons (delegated)
     document.querySelectorAll('[data-close-modal]').forEach(btn => {
@@ -152,6 +159,15 @@ function setActiveUser(user) {
 
     // Populate recipient dropdown excluding current user (BR-01 Self-Kudos prevention)
     populateRecipientDropdown();
+
+    // Reset Personal Scope Filter (US-05)
+    state.currentScope = 'all';
+    document.querySelectorAll('.scope-tab').forEach(t => {
+        t.classList.toggle('active', t.getAttribute('data-scope') === 'all');
+    });
+
+    // Refresh live personal statistics (US-05)
+    fetchUserStatistics();
 }
 
 /**
@@ -193,6 +209,44 @@ function populateRecipientDropdown() {
         opt.textContent = `${user.name} — ${user.department}`;
         select.appendChild(opt);
     });
+}
+
+/**
+ * Handles switching between All, Received, and Sent kudos views (US-05).
+ */
+function handleScopeTabClick(e) {
+    const tab = e.target.closest('.scope-tab');
+    if (!tab) return;
+    const scope = tab.getAttribute('data-scope');
+    if (state.currentScope === scope) return;
+
+    state.currentScope = scope;
+    document.querySelectorAll('.scope-tab').forEach(t => {
+        t.classList.toggle('active', t.getAttribute('data-scope') === scope);
+    });
+
+    fetchLiveFeed();
+}
+
+/**
+ * Fetches and updates personal kudos statistics for active user (US-05).
+ */
+async function fetchUserStatistics() {
+    if (!state.currentUser) return;
+    try {
+        const response = await fetch(`/api/v1/users/${state.currentUser.id}/statistics`, {
+            headers: { 'X-User-Id': state.currentUser.id }
+        });
+        if (response.ok) {
+            const stats = await response.json();
+            const recEl = document.getElementById('statReceivedCount');
+            const sentEl = document.getElementById('statSentCount');
+            if (recEl) recEl.textContent = stats.kudos_received;
+            if (sentEl) sentEl.textContent = stats.kudos_sent;
+        }
+    } catch (err) {
+        console.error('Error fetching user statistics:', err);
+    }
 }
 
 // ============================================================================
@@ -321,8 +375,9 @@ async function handleKudoSubmit(e) {
             // Trigger client-side cooldown countdown (10s anti-spam BR-05)
             startCooldownTimer(10);
 
-            // Re-fetch feed to display newly posted kudo
+            // Re-fetch feed and stats to display newly posted kudo
             await fetchLiveFeed();
+            await fetchUserStatistics();
 
         } else if (response.status === 429) {
             // Anti-spam or duplicate violation (BR-05)
@@ -392,7 +447,7 @@ async function fetchLiveFeed() {
     skeleton.classList.remove('hidden');
 
     try {
-        const url = `/api/v1/kudos?limit=50&offset=0&filter=${state.currentFilter}`;
+        const url = `/api/v1/kudos?limit=50&offset=0&filter=${state.currentFilter}&scope=${state.currentScope}`;
         const response = await fetch(url, {
             headers: { 'X-User-Id': state.currentUser.id }
         });

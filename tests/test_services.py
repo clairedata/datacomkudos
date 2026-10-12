@@ -15,6 +15,7 @@ import src.services.ai_moderation as aimod
 from src.services.kudos_service import (
     create_kudo,
     get_kudos_feed,
+    get_user_statistics,
     moderate_kudo,
     dismiss_ai_flag,
     delete_kudo,
@@ -395,3 +396,47 @@ def test_br09_delete_kudo_preserves_audit(db_conn, thomas_admin):
     post_audit = get_kudo_audit(kudo_id="k-003", admin_user=thomas_admin, conn=db_conn)
     assert len(post_audit) == prior_count + 1
     assert post_audit[-1]["action"] == "DELETE"
+
+
+def test_get_user_statistics(db_conn, sarah_user):
+    """
+    US-05: Verifies that get_user_statistics correctly aggregates
+    kudos received (only visible) and kudos sent.
+    """
+    stats = get_user_statistics(user_id="u-01", conn=db_conn)
+    assert stats["user_id"] == "u-01"
+    assert stats["name"] == "Sarah Connor"
+    assert "kudos_received" in stats
+    assert "kudos_sent" in stats
+    assert stats["kudos_received"] >= 0
+    assert stats["kudos_sent"] >= 0
+
+    # Non-existent user raises NotFoundError
+    with pytest.raises(NotFoundError):
+        get_user_statistics(user_id="u-does-not-exist", conn=db_conn)
+
+
+def test_kudos_feed_scope_filtering(db_conn, sarah_user, james_user):
+    """
+    US-05: Verifies that scope='received' and scope='sent' filter the feed
+    strictly according to the active user's identity.
+    """
+    # Create a kudo from Sarah to James
+    create_kudo(
+        current_user=sarah_user,
+        recipient_id="u-02",
+        category="Teamwork",
+        message="Super job James on the deployment!",
+        conn=db_conn
+    )
+
+    # Sarah views sent kudos
+    sent_feed = get_kudos_feed(current_user=sarah_user, scope="sent", conn=db_conn)
+    for kudo in sent_feed["data"]:
+        assert kudo["sender"]["id"] == "u-01"
+
+    # James views received kudos
+    received_feed = get_kudos_feed(current_user=james_user, scope="received", conn=db_conn)
+    for kudo in received_feed["data"]:
+        assert kudo["recipient"]["id"] == "u-02"
+

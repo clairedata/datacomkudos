@@ -3,6 +3,8 @@
 **Project:** Datacom Internal Employee Recognition Portal  
 **Document Identifier:** SPEC-DATACOM-KUDOS-001  
 **Version:** 1.0.0 (Final Approved Technical and Functional Specification)  
+**Repository:** [https://github.com/clairedata/datacomkudos](https://github.com/clairedata/datacomkudos)  
+**Author:** Tahiri My Ahmed (`clairedata`)  
 
 
 ---
